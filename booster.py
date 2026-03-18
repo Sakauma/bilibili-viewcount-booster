@@ -292,7 +292,7 @@ while True:
             #               data={
             #                   'aid': info['aid'],
             #                   'cid': info['cid'],
-            #                   'bvid': bv,
+            #                   'bvid': bv, 
             #                   'part': '1',
             #                   'mid': info['owner']['mid'],
             #                   'jsonp': 'jsonp',
