@@ -226,10 +226,10 @@ def filter_proxys(proxies: 'list[str]') -> None:
             #               proxies={'http': 'http://'+proxy},
             #               timeout=timeout)
             # active_proxies.append(proxy)
-            requests.post('https://httpbin.org/post',  # 测试目标改为 https
+            requests.post('https://httpbin.org/post',  # 测试目标改为https
                           proxies={
                               'http': 'http://'+proxy,
-                              'https': 'http://'+proxy   # 为 requests 增加 https 请求的代理路由
+                              'https': 'http://'+proxy   # 为requests增加https请求的代理路由
                           },
                           timeout=timeout)
             active_proxies.append(proxy)
@@ -299,10 +299,10 @@ while True:
             #                   'type': info['desc_v2'][0]['type'] if info['desc_v2'] else '1',
             #                   'sub_type': '0'
             #               })
-            requests.post('https://api.bilibili.com/x/click-interface/click/web/h5', # 修改1：API 改为 https
+            requests.post('https://api.bilibili.com/x/click-interface/click/web/h5', # API改为https
                           proxies={
                               'http': 'http://'+proxy,
-                              'https': 'http://'+proxy   # 修改2：增加 https 路由映射
+                              'https': 'http://'+proxy   # 增加https路由映射
                           },
                           headers={'User-Agent': UserAgent().random},
                           timeout=timeout,

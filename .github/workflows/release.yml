@@ -22,7 +22,7 @@ jobs:
       # release = tag + title + description + packages
       - name: Create release
         id: create-release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
 
   # upload-binary:
   #   needs: create-release
