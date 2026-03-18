@@ -68,7 +68,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          pip install pyinstaller==6.11.1
+          pip install pyinstaller>=6.15.0
 
       - name: Build binary executable
         # https://pyinstaller.org/en/stable/usage.html#options
