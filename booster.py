@@ -110,6 +110,20 @@ def fetch_from_monosans() -> list[str]:
         'https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/http.txt',
         'monosans GitHub list')
 
+def fetch_from_proxifly_cn() -> list[str]:
+    url = 'https://raw.githubusercontent.com/proxifly/free-proxy-list/main/proxies/countries/CN/data.json'
+    print(f'getting proxies from {url} ...')
+    try:
+        response = requests.get(url, timeout=timeout + 2)
+        response.raise_for_status()
+        data = response.json()
+        # 提取 JSON 中的 ip 和 port 字段
+        proxies = [f"{item['ip']}:{item['port']}" for item in data if item.get('ip') and item.get('port')]
+        print(f'successfully get {len(proxies)} proxies from proxifly CN')
+        return proxies
+    except Exception as e:
+        print(f'proxifly CN unavailable: {e}')
+        return []
 
 def build_view_params(video_id: str) -> dict[str, str]:
     """Return API query params for either BV or AV id."""
@@ -149,6 +163,7 @@ def fetch_video_info(video_id: str) -> dict:
 
 def get_total_proxies() -> list[str]:
     fetchers = [
+        ('proxifly_cn', fetch_from_proxifly_cn),
         ('checkerproxy', fetch_from_checkerproxy),
         ('proxyscrape', fetch_from_proxyscrape),
         ('proxy-list.download', fetch_from_proxylistdownload),
@@ -207,8 +222,15 @@ def filter_proxys(proxies: 'list[str]') -> None:
     for proxy in proxies:
         count = count + 1
         try:
-            requests.post('http://httpbin.org/post',
-                          proxies={'http': 'http://'+proxy},
+            # requests.post('http://httpbin.org/post',
+            #               proxies={'http': 'http://'+proxy},
+            #               timeout=timeout)
+            # active_proxies.append(proxy)
+            requests.post('https://httpbin.org/post',  # 测试目标改为 https
+                          proxies={
+                              'http': 'http://'+proxy,
+                              'https': 'http://'+proxy   # 为 requests 增加 https 请求的代理路由
+                          },
                           timeout=timeout)
             active_proxies.append(proxy)
         except:  # proxy connect timeout
@@ -263,8 +285,25 @@ while True:
                     print(f'{pbar(current, target, successful_hits, current - initial_view_count)} done                 ', end='')
                     break
 
-            requests.post('http://api.bilibili.com/x/click-interface/click/web/h5',
-                          proxies={'http': 'http://'+proxy},
+            # requests.post('http://api.bilibili.com/x/click-interface/click/web/h5',
+            #               proxies={'http': 'http://'+proxy},
+            #               headers={'User-Agent': UserAgent().random},
+            #               timeout=timeout,
+            #               data={
+            #                   'aid': info['aid'],
+            #                   'cid': info['cid'],
+            #                   'bvid': bv,
+            #                   'part': '1',
+            #                   'mid': info['owner']['mid'],
+            #                   'jsonp': 'jsonp',
+            #                   'type': info['desc_v2'][0]['type'] if info['desc_v2'] else '1',
+            #                   'sub_type': '0'
+            #               })
+            requests.post('https://api.bilibili.com/x/click-interface/click/web/h5', # 修改1：API 改为 https
+                          proxies={
+                              'http': 'http://'+proxy,
+                              'https': 'http://'+proxy   # 修改2：增加 https 路由映射
+                          },
                           headers={'User-Agent': UserAgent().random},
                           timeout=timeout,
                           data={
